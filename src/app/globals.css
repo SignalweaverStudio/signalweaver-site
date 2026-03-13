@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.12 0.01 200);
+  --foreground: oklch(0.98 0.005 200);
+  --card: oklch(0.16 0.012 200);
+  --card-foreground: oklch(0.98 0.005 200);
+  --primary: oklch(0.75 0.14 190);
+  --primary-foreground: oklch(0.12 0.01 200);
+  --secondary: oklch(0.22 0.015 200);
+  --secondary-foreground: oklch(0.98 0.005 200);
+  --muted: oklch(0.22 0.015 200);
+  --muted-foreground: oklch(0.65 0.02 200);
+  --accent: oklch(0.22 0.015 200);
+  --accent-foreground: oklch(0.98 0.005 200);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.28 0.02 200);
+  --input: oklch(0.28 0.02 200);
+  --ring: oklch(0.75 0.14 190);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, oklch(0.75 0.14 190) 0%, oklch(0.65 0.18 180) 50%, oklch(0.55 0.16 170) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-teal {
+  box-shadow: 0 0 40px oklch(0.75 0.14 190 / 0.15);
+}
+
+.bg-grid {
+  background-image: 
+    linear-gradient(oklch(0.28 0.02 200 / 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.28 0.02 200 / 0.3) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
