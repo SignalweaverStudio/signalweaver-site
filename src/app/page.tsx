@@ -45,7 +45,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <a 
-              href="https://github.com/cyclcon/signalweaver" 
+              href="https://github.com/SignalweaverStudio/signalweaver-site" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-white transition-colors"
@@ -89,7 +89,7 @@ export default function Home() {
                 </a>
               </Button>
               <Button size="lg" variant="outline" className="gap-2 text-white border-white/20" asChild>
-                <a href="https://github.com/cyclcon/signalweaver" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/SignalweaverStudio/signalweaver-site" target="_blank" rel="noopener noreferrer">
                   <Github className="w-4 h-4" />
                   View on GitHub
                 </a>
@@ -407,7 +407,7 @@ export default function Home() {
                     <p className="text-gray-400">
                       We will be in touch soon. In the meantime, explore the{" "}
                       <a 
-                        href="https://github.com/cyclcon/signalweaver" 
+                        href="https://github.com/SignalweaverStudio/signalweaver-site" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="hover:underline"
@@ -483,7 +483,7 @@ export default function Home() {
             
             <div className="flex items-center gap-6 text-sm text-gray-400">
               <a 
-                href="https://github.com/cyclcon/signalweaver" 
+                href="https://github.com/SignalweaverStudio/signalweaver-site" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="hover:text-white transition-colors"
