@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   description: "Policy-governance layer for AI agents. Truth Anchors, Gate Engine, Decision Trace, and Counterfactual Replay for enterprise AI compliance.",
   keywords: ["AI governance", "EU AI Act", "policy engine", "AI compliance", "deterministic AI"],
   authors: [{ name: "SignalWeaver" }],
+  icons: {
+    icon: "/favicon.svg",
+  },
   openGraph: {
     title: "SignalWeaver - Deterministic AI Governance",
     description: "Policy-governance layer for AI agents. Built for enterprise compliance.",
