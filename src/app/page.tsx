@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
+import DemoWidget from '@/components/DemoWidget';
 import { 
   Shield, 
   GitBranch, 
@@ -98,7 +99,19 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* Demo Section */}
+      <section className="py-20 px-4 bg-white">
+        <div className="max-w-4xl mx-auto text-center mb-8">
+          <h2 className="text-3xl font-bold mb-2 text-slate-900">
+            See It In Action
+          </h2>
+          <p className="text-slate-600">
+            Interactive preview based on the live SignalWeaver demo flow.
+          </p>
+        </div>
 
+        <DemoWidget />
+      </section>
       {/* Trust Indicators */}
       <section className="py-12 border-y border-white/10" style={{ backgroundColor: "rgba(30, 38, 46, 0.5)" }}>
         <div className="container mx-auto px-4">
