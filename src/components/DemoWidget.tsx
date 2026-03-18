@@ -19,70 +19,8 @@ interface EvaluationResult {
   timestamp: string;
 }
 
-// Simulated decision logic matching live demo behavior
-function simulateEvaluate(
-  requestSummary: string,
-  arousal: StateLevel,
-  dominance: StateLevel
-): EvaluationResult {
-  const input = requestSummary.toLowerCase();
   
-  // Scenario 1: Safe request (calendar/settings/check)
-  if (input.includes('calendar') || input.includes('settings') || input.includes('check')) {
-    return {
-      decision: 'proceed',
-      reason: 'no_high_conflict',
-      interpretation: 'Request appears to be a routine administrative action with no policy conflicts detected.',
-      suggestion: 'No intervention required. Standard processing applies.',
-      explanations: ['No anchor conflicts triggered', 'Intensity within normal parameters', 'Assertiveness indicates non-adversarial intent'],
-      warnings: [],
-      trace_id: `tr_${Math.random().toString(36).substring(2, 10)}`,
-      timestamp: new Date().toISOString()
-    };
-  }
-  
-  // Scenario 2: Low-level conflict (refund/financial/harm/escalation)
-  if (input.includes('refund') || input.includes('financial') || input.includes('escalation') || input.includes('harm')) {
-    return {
-      decision: 'proceed',
-      reason: 'low_level_conflict',
-      interpretation: 'Request contains elevated risk language referencing financial impact. Flagged for awareness but within acceptable threshold.',
-      suggestion: 'Monitor for pattern escalation. Consider review if frequency increases.',
-      explanations: ['Financial impact keywords detected', 'Escalation language present', 'Low-level anchor triggered but below gate threshold'],
-      warnings: ['Elevated intensity detected', 'Financial domain keywords present'],
-      warning_anchors: ['L1_financial_awareness'],
-      trace_id: `tr_${Math.random().toString(36).substring(2, 10)}`,
-      timestamp: new Date().toISOString()
-    };
-  }
-  
-  // Scenario 3: High-risk / bypass attempt
-  if (input.includes('bypass') || input.includes('filter') || input.includes('safety') || input.includes('unsafe')) {
-    return {
-      decision: 'gate',
-      reason: 'l3_anchor_conflict',
-      interpretation: 'Request indicates potential attempt to circumvent system safeguards. Critical policy conflict detected.',
-      suggestion: 'Human review required before any action. Do not auto-process.',
-      explanations: ['Bypass language detected', 'Safety circumvention indicators present', 'L3 anchor threshold exceeded'],
-      warnings: ['Critical: Potential safety bypass attempt', 'Requires immediate human review'],
-      warning_anchors: ['L3_bypass_prevention', 'L2_elevated_intent'],
-      trace_id: `tr_${Math.random().toString(36).substring(2, 10)}`,
-      timestamp: new Date().toISOString()
-    };
-  }
-  
-  // Default: unknown but proceed with caution
-  return {
-    decision: 'proceed',
-    reason: 'no_high_conflict',
-    interpretation: 'Request analyzed. No explicit policy conflicts detected based on current anchor configuration.',
-    suggestion: 'Standard processing. Monitor for emerging patterns.',
-    explanations: ['No anchor conflicts', 'Standard risk profile'],
-    warnings: [],
-    trace_id: `tr_${Math.random().toString(36).substring(2, 10)}`,
-    timestamp: new Date().toISOString()
-  };
-}
+ 
 
 // Decision badge component with Tailwind
 function DecisionBadge({ decision }: { decision: Decision }) {
@@ -98,29 +36,49 @@ function DecisionBadge({ decision }: { decision: Decision }) {
   );
 }
 
-// Main widget component
 export default function DemoWidget() {
   const [requestSummary, setRequestSummary] = useState('');
   const [arousal, setArousal] = useState<StateLevel>('low');
   const [dominance, setDominance] = useState<StateLevel>('low');
-  const [result, setResult] = useState<EvaluationResult | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<any | null>(null);
+  const [loading, setLoading] = useState(false);
   const [showReplay, setShowReplay] = useState(false);
-
-  const handleEvaluate = () => {
-    if (!requestSummary.trim()) return;
+  const [error, setError] = useState<string | null>(null);
     
-    setIsLoading(true);
+      async function handleEvaluate() {
+    if (!requestSummary.trim()) return;
+
+    setLoading(true);
+    setError(null);
     setResult(null);
     setShowReplay(false);
-    
-    // Simulate network latency
-    setTimeout(() => {
-      const response = simulateEvaluate(requestSummary, arousal, dominance);
-      setResult(response);
-      setIsLoading(false);
-    }, 600);
-  };
+
+    try {
+      const response = await fetch("/api/evaluate", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    request_summary: requestSummary,
+    arousal,
+    dominance,
+  }),
+});
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`API ${response.status}: ${text}`);
+      }
+
+      const data = await response.json();
+      setResult(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleReplay = () => {
     if (!result) return;
@@ -190,15 +148,15 @@ export default function DemoWidget() {
         {/* Evaluate Button */}
         <button
           onClick={handleEvaluate}
-          disabled={isLoading || !requestSummary.trim()}
+          disabled={loading || !requestSummary.trim()}
           className={`
             w-full py-2.5 px-4 text-sm font-semibold text-white rounded-md transition-colors
-            ${isLoading || !requestSummary.trim() 
+            ${loading || !requestSummary.trim() 
               ? 'bg-slate-400 cursor-not-allowed' 
               : 'bg-sky-500 hover:bg-sky-600 cursor-pointer'}
           `}
         >
-          {isLoading ? 'Evaluating...' : 'Evaluate'}
+          {loading ? 'Evaluating...' : 'Evaluate'}
         </button>
       </div>
       
@@ -244,9 +202,13 @@ export default function DemoWidget() {
               explanations
             </div>
             <ul className="ml-5 text-sm text-slate-600 list-disc leading-relaxed">
-              {result.explanations.map((exp, i) => (
-                <li key={i}>{exp}</li>
-              ))}
+              {Array.isArray(result.explanations) && result.explanations.length > 0 ? (
+  result.explanations.map((exp, i) => (
+    <li key={i}>{exp}</li>
+  ))
+) : (
+  <li>No explanation details returned.</li>
+)}
             </ul>
           </div>
           
