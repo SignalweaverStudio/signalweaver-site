@@ -161,13 +161,14 @@ export default function DemoWidget() {
               intensity
             </label>
             <select
-              value={arousal}
-              onChange={(e) => setArousal(e.target.value as StateLevel)}
-              className="w-full p-2 text-sm font-mono border border-slate-300 rounded-md bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-            >
-              <option value="low">low</option>
-              <option value="med">med</option>
-            </select>
+  value={arousal}
+  onChange={(e) => setArousal(e.target.value as StateLevel)}
+  className="block w-full appearance-auto rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+  style={{ color: "#0f172a" }}
+>
+  <option value="low">low</option>
+  <option value="med">med</option>
+</select>
           </div>
           
           <div>
@@ -175,13 +176,14 @@ export default function DemoWidget() {
               assertiveness
             </label>
             <select
-              value={dominance}
-              onChange={(e) => setDominance(e.target.value as StateLevel)}
-              className="w-full p-2 text-sm font-mono border border-slate-300 rounded-md bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
-            >
-              <option value="low">low</option>
-              <option value="med">med</option>
-            </select>
+  value={dominance}
+  onChange={(e) => setDominance(e.target.value as StateLevel)}
+  className="block w-full appearance-auto rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+  style={{ color: "#0f172a" }}
+>
+  <option value="low">low</option>
+  <option value="med">med</option>
+</select>
           </div>
         </div>
         
