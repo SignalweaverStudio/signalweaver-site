@@ -26,11 +26,26 @@ export default function Home() {
   const [name, setName] = useState("")
   const [message, setMessage] = useState("")
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log({ email, name, message })
-    setSubmitted(true)
+    setSubmitting(true)
+    setSubmitError("")
+    try {
+      const res = await fetch("/api/early-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      })
+      if (!res.ok) throw new Error("Request failed")
+      setSubmitted(true)
+    } catch {
+      setSubmitError("Something went wrong. Please try again or email us directly.")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -472,8 +487,11 @@ export default function Home() {
                         className="bg-gray-800 border-gray-700 text-white"
                       />
                     </div>
-                    <Button type="submit" className="w-full" size="lg" style={{ backgroundColor: "rgb(0, 200, 180)", color: "#0c1014" }}>
-                      Request Access
+                    {submitError && (
+                      <p className="text-sm text-red-400">{submitError}</p>
+                    )}
+                    <Button type="submit" className="w-full" size="lg" disabled={submitting} style={{ backgroundColor: "rgb(0, 200, 180)", color: "#0c1014" }}>
+                      {submitting ? "Sending..." : "Request Access"}
                     </Button>
                   </form>
                 )}
