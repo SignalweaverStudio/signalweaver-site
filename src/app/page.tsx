@@ -87,27 +87,31 @@ export default function Home() {
             </Badge>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
-              Deterministic Policy Governance
+              Governance that sits between
               <br />
-              <span className="text-gradient">for AI Agents</span>
+              <span className="text-gradient">AI and action</span>
             </h1>
             
             <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-              Every AI action evaluated against policy. Every decision traced. 
-              Every outcome replayable. Built for EU AI Act compliance and enterprise trust.
+              SignalWeaver evaluates AI decisions against declared policy, produces a deterministic outcome, and records a replayable trace for audit.
             </p>
             
+            <div className="flex justify-center gap-0.5 mb-10">
+              <span className="px-7 py-2.5 font-mono text-sm font-bold uppercase tracking-wider bg-emerald-500 text-black rounded-l-md">proceed</span>
+              <span className="px-7 py-2.5 font-mono text-sm font-bold uppercase tracking-wider bg-amber-500 text-black">gate</span>
+              <span className="px-7 py-2.5 font-mono text-sm font-bold uppercase tracking-wider bg-red-500 text-white rounded-r-md">refuse</span>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="gap-2" asChild style={{ backgroundColor: "rgb(0, 200, 180)", color: "#0c1014" }}>
-                <a href="#early-access">
-                  Request Early Access
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-              </Button>
-              <Button size="lg" variant="outline" className="gap-2 text-white border-white/20" asChild>
                 <a href="https://github.com/SignalweaverStudio/signalweaver" target="_blank" rel="noopener noreferrer">
                   <Github className="w-4 h-4" />
                   View on GitHub
+                </a>
+              </Button>
+              <Button size="lg" variant="outline" className="gap-2 text-white border-white/20" asChild>
+                <a href="mailto:signalweaver.studio@gmail.com">
+                  Talk to us
                 </a>
               </Button>
             </div>
@@ -337,8 +341,7 @@ export default function Home() {
                 </div>
                 <CardTitle className="text-white">Counterfactual Replay</CardTitle>
                 <CardDescription className="text-base text-gray-300">
-                  The competitive moat. Simulate how policy changes would have affected historical decisions - 
-                  impossible with model-based approaches.
+                  Simulate how policy changes would have affected historical decisions — impossible with model-based approaches.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -530,7 +533,7 @@ export default function Home() {
             </div>
             
             <div className="text-sm text-gray-400">
-              2025 SignalWeaver. Open source under MIT.
+              2026 SignalWeaver. Commercial use requires OEM licensing.
             </div>
           </div>
         </div>
