@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import DemoWidget from '@/components/DemoWidget';
-import { 
-  Shield, 
-  GitBranch, 
-  FileSearch, 
-  RotateCcw, 
+import {
+  Shield,
+  GitBranch,
+  FileSearch,
+  RotateCcw,
   Zap,
   Github,
   ArrowRight,
@@ -26,11 +26,26 @@ export default function Home() {
   const [name, setName] = useState("")
   const [message, setMessage] = useState("")
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log({ email, name, message })
-    setSubmitted(true)
+    setSubmitting(true)
+    setSubmitError("")
+    try {
+      const res = await fetch("/api/early-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      })
+      if (!res.ok) throw new Error("Request failed")
+      setSubmitted(true)
+    } catch {
+      setSubmitError("Something went wrong. Please try again or email us directly.")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -45,9 +60,9 @@ export default function Home() {
             <span className="font-semibold text-lg text-white">SignalWeaver</span>
           </div>
           <div className="flex items-center gap-4">
-            <a 
-              href="https://github.com/SignalweaverStudio/signalweaver" 
-              target="_blank" 
+            <a
+              href="https://github.com/SignalweaverStudio/signalweaver"
+              target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-white transition-colors"
             >
@@ -64,41 +79,46 @@ export default function Home() {
       <section className="relative py-24 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-30" />
         <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent" />
-        
+
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <Badge variant="outline" className="mb-6 px-4 py-1.5 text-sm" style={{ borderColor: "rgba(0, 200, 180, 0.3)", color: "rgb(0, 200, 180)" }}>
               Open Source - v0.1.0
             </Badge>
-            
+
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
-              Deterministic Policy Governance
+              Governance that sits between
               <br />
-              <span className="text-gradient">for AI Agents</span>
+              <span className="text-gradient">AI and action</span>
             </h1>
-            
+
             <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-              Every AI action evaluated against policy. Every decision traced. 
-              Every outcome replayable. Built for EU AI Act compliance and enterprise trust.
+              SignalWeaver evaluates AI decisions against declared policy, produces a deterministic outcome, and records a replayable trace for audit.
             </p>
-            
+
+            <div className="flex justify-center gap-0.5 mb-10">
+              <span className="px-7 py-2.5 font-mono text-sm font-bold uppercase tracking-wider bg-emerald-500 text-black rounded-l-md">proceed</span>
+              <span className="px-7 py-2.5 font-mono text-sm font-bold uppercase tracking-wider bg-amber-500 text-black">gate</span>
+              <span className="px-7 py-2.5 font-mono text-sm font-bold uppercase tracking-wider bg-red-500 text-white rounded-r-md">refuse</span>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="gap-2" asChild style={{ backgroundColor: "rgb(0, 200, 180)", color: "#0c1014" }}>
-                <a href="#early-access">
-                  Request Early Access
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-              </Button>
-              <Button size="lg" variant="outline" className="gap-2 text-white border-white/20" asChild>
                 <a href="https://github.com/SignalweaverStudio/signalweaver" target="_blank" rel="noopener noreferrer">
                   <Github className="w-4 h-4" />
                   View on GitHub
+                </a>
+              </Button>
+              <Button size="lg" variant="outline" className="gap-2 text-white border-white/20" asChild>
+                <a href="mailto:signalweaver.studio@gmail.com">
+                  Talk to us
                 </a>
               </Button>
             </div>
           </div>
         </div>
       </section>
+
       {/* Demo Section */}
       <section className="py-20 px-4 bg-white">
         <div className="max-w-4xl mx-auto text-center mb-8">
@@ -112,6 +132,7 @@ export default function Home() {
 
         <DemoWidget />
       </section>
+
       {/* Trust Indicators */}
       <section className="py-12 border-y border-white/10" style={{ backgroundColor: "rgba(30, 38, 46, 0.5)" }}>
         <div className="container mx-auto px-4">
@@ -126,9 +147,9 @@ export default function Home() {
             <div className="text-center">
               <div className="flex items-center justify-center mb-2">
                 <Scale className="w-5 h-5 mr-2" style={{ color: "rgb(0, 200, 180)" }} />
-                <span className="font-semibold text-white">EU AI Act Ready</span>
+                <span className="font-semibold text-white">Model-Agnostic</span>
               </div>
-              <p className="text-sm text-gray-400">Built for compliance mandates</p>
+              <p className="text-sm text-gray-400">Works with any AI system. No retraining required.</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center mb-2">
@@ -156,11 +177,11 @@ export default function Home() {
               The Problem in One Sentence
             </h2>
             <p className="text-xl text-gray-400">
-              AI agents make decisions that cannot be audited, traced, or governed - 
+              AI agents make decisions that cannot be audited, traced, or governed -
               and regulators are now demanding answers that model-based systems cannot provide.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <Card style={{ backgroundColor: "rgba(180, 60, 60, 0.1)", borderColor: "rgba(180, 60, 60, 0.3)" }}>
               <CardHeader>
@@ -201,7 +222,7 @@ export default function Home() {
               Five building blocks that work together to govern AI agent behavior with mathematical certainty.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <Card className="glow-teal hover:border-cyan-500/50 transition-colors" style={{ backgroundColor: "rgba(30, 38, 46, 1)" }}>
               <CardHeader>
@@ -322,8 +343,7 @@ export default function Home() {
                 </div>
                 <CardTitle className="text-white">Counterfactual Replay</CardTitle>
                 <CardDescription className="text-base text-gray-300">
-                  The competitive moat. Simulate how policy changes would have affected historical decisions - 
-                  impossible with model-based approaches.
+                  Simulate how policy changes would have affected historical decisions — impossible with model-based approaches.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -366,7 +386,7 @@ export default function Home() {
               Three steps from chaos to compliance
             </p>
           </div>
-          
+
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
@@ -419,9 +439,9 @@ export default function Home() {
                     <h3 className="text-xl font-semibold mb-2 text-white">Request Received</h3>
                     <p className="text-gray-400">
                       We will be in touch soon. In the meantime, explore the{" "}
-                      <a 
-                        href="https://github.com/SignalweaverStudio/signalweaver" 
-                        target="_blank" 
+                      <a
+                        href="https://github.com/SignalweaverStudio/signalweaver"
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="hover:underline"
                         style={{ color: "rgb(0, 200, 180)" }}
@@ -472,8 +492,11 @@ export default function Home() {
                         className="bg-gray-800 border-gray-700 text-white"
                       />
                     </div>
-                    <Button type="submit" className="w-full" size="lg" style={{ backgroundColor: "rgb(0, 200, 180)", color: "#0c1014" }}>
-                      Request Access
+                    {submitError && (
+                      <p className="text-sm text-red-400">{submitError}</p>
+                    )}
+                    <Button type="submit" className="w-full" size="lg" disabled={submitting} style={{ backgroundColor: "rgb(0, 200, 180)", color: "#0c1014" }}>
+                      {submitting ? "Sending..." : "Request Access"}
                     </Button>
                   </form>
                 )}
@@ -493,11 +516,11 @@ export default function Home() {
               </div>
               <span className="font-semibold text-white">SignalWeaver</span>
             </div>
-            
+
             <div className="flex items-center gap-6 text-sm text-gray-400">
-              <a 
-                href="https://github.com/SignalweaverStudio/signalweaver" 
-                target="_blank" 
+              <a
+                href="https://github.com/SignalweaverStudio/signalweaver"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-white transition-colors"
               >
@@ -510,9 +533,9 @@ export default function Home() {
                 Contact
               </a>
             </div>
-            
+
             <div className="text-sm text-gray-400">
-              2025 SignalWeaver. Open source under MIT.
+              2026 SignalWeaver. Commercial use requires OEM licensing.
             </div>
           </div>
         </div>
