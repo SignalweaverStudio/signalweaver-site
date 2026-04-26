@@ -1,4 +1,109 @@
-"use client";
+#!/usr/bin/env python3
+"""
+SignalWeaver Site Fix — Apply live demo changes
+Run from the ROOT of your signalweaver-site repo:
+    python apply-site-fix.py
+
+Creates / updates 4 files:
+  1. src/app/api/evaluate/route.ts        (updated — adds X-API-Key header)
+  2. src/app/api/replay/[traceId]/route.ts (new — real replay proxy)
+  3. src/components/DemoWidget.tsx          (updated — real replay, no fake CTA)
+  4. .env.example                          (new — env var docs)
+"""
+
+import os, sys
+
+# ── Validate we're in the right directory ──
+if not os.path.isfile("package.json") or "signalweaver-site" not in open("package.json").read():
+    print("ERROR: Run this from the root of signalweaver-site repo")
+    print("  cd C:\\Users\\verti\\projects\\signalweaver-site")
+    print("  python apply-site-fix.py")
+    sys.exit(1)
+
+files_created = []
+
+# ── File 1: src/app/api/evaluate/route.ts ──
+EVALUATE_ROUTE = r'''export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+
+    const apiBase = process.env.SIGNALWEAVER_API_BASE_URL;
+    const token = process.env.SIGNALWEAVER_BEARER_TOKEN;
+    const apiKey = process.env.SIGNALWEAVER_API_KEY;
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+
+    if (apiKey) {
+      headers["X-API-Key"] = apiKey;
+    }
+
+    const response = await fetch(`${apiBase}/gate/evaluate`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+    });
+
+    const text = await response.text();
+
+    return new Response(text, {
+      status: response.status,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    return new Response(
+      JSON.stringify({ error: "Proxy error", details: String(err) }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
+}
+'''
+
+# ── File 2: src/app/api/replay/[traceId]/route.ts ──
+REPLAY_ROUTE = r'''import { NextRequest } from "next/server";
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ traceId: string }> }
+) {
+  try {
+    const { traceId } = await params;
+    const apiBase = process.env.SIGNALWEAVER_API_BASE_URL;
+    const token = process.env.SIGNALWEAVER_BEARER_TOKEN;
+    const apiKey = process.env.SIGNALWEAVER_API_KEY;
+
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    if (apiKey) {
+      headers["X-API-Key"] = apiKey;
+    }
+
+    const response = await fetch(`${apiBase}/gate/replay/${traceId}`, {
+      method: "GET",
+      headers,
+    });
+
+    const text = await response.text();
+
+    return new Response(text, {
+      status: response.status,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    return new Response(
+      JSON.stringify({ error: "Proxy error", details: String(err) }),
+      { status: 502, headers: { "Content-Type": "application/json" } }
+    );
+  }
+}
+'''
+
+# ── File 3: src/components/DemoWidget.tsx ──
+DEMO_WIDGET = r'''"use client";
 
 import React, { useState } from 'react';
 
@@ -329,3 +434,40 @@ export default function DemoWidget() {
     </div>
   );
 }
+'''
+
+# ── File 4: .env.example ──
+ENV_EXAMPLE = '''# SignalWeaver API backend URL
+SIGNALWEAVER_API_BASE_URL=http://localhost:8000
+
+# Bearer token for SignalWeaver API authentication
+SIGNALWEAVER_BEARER_TOKEN=
+
+# API key for SignalWeaver API (required when SW_API_KEY is set on the backend)
+SIGNALWEAVER_API_KEY=
+'''
+
+# ── Write all files ──
+files = {
+    "src/app/api/evaluate/route.ts": EVALUATE_ROUTE,
+    "src/app/api/replay/[traceId]/route.ts": REPLAY_ROUTE,
+    "src/components/DemoWidget.tsx": DEMO_WIDGET,
+    ".env.example": ENV_EXAMPLE,
+}
+
+for path, content in files.items():
+    # Create parent directories
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content.lstrip("\n"))
+    
+    files_created.append(path)
+    print(f"  OK  {path}")
+
+print(f"\nDone! {len(files_created)} files created / updated.")
+print("\nNext steps:")
+print("  1. Review the changes:  git diff")
+print("  2. Commit:             git add -A && git commit -m 'feat: live demo — real replay + auth fix'")
+print("  3. Push:               git push origin main")
+print("  4. Vercel will auto-deploy")

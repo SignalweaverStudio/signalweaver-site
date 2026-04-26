@@ -1,13 +1,16 @@
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
+import { NextRequest } from "next/server";
 
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ traceId: string }> }
+) {
+  try {
+    const { traceId } = await params;
     const apiBase = process.env.SIGNALWEAVER_API_BASE_URL;
     const token = process.env.SIGNALWEAVER_BEARER_TOKEN;
     const apiKey = process.env.SIGNALWEAVER_API_KEY;
 
     const headers: Record<string, string> = {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     };
 
@@ -15,10 +18,9 @@ export async function POST(req: Request) {
       headers["X-API-Key"] = apiKey;
     }
 
-    const response = await fetch(`${apiBase}/gate/evaluate`, {
-      method: "POST",
+    const response = await fetch(`${apiBase}/gate/replay/${traceId}`, {
+      method: "GET",
       headers,
-      body: JSON.stringify(body),
     });
 
     const text = await response.text();
@@ -30,7 +32,7 @@ export async function POST(req: Request) {
   } catch (err) {
     return new Response(
       JSON.stringify({ error: "Proxy error", details: String(err) }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 502, headers: { "Content-Type": "application/json" } }
     );
   }
 }
